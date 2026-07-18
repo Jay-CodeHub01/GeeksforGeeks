@@ -1,17 +1,5 @@
 class Solution {
   public:
-  
-  void DFS(int node, vector<vector<int>>&adj, vector<int>&visited, stack<int>&s){
-      visited[node]= 1;
-      
-      for(int j=0; j<adj[node].size();j++){
-          if(!visited[adj[node][j]])
-          DFS(adj[node][j], adj, visited, s);
-      }
-      
-      s.push(node);
-  }
-  
     vector<int> topoSort(int V, vector<vector<int>>& edges) {
         // code here
         vector<vector<int>> adj(V);
@@ -19,19 +7,38 @@ class Solution {
             adj[e[0]].push_back(e[1]);
         }
         
-        vector<int>visited(V,0);
-        stack<int>s;
+        vector<int>ans;
         
-        for(int i=0 ; i<V; i++){
-            if(!visited[i]){
-                DFS(i,adj,visited,s);
-            } 
+        // Calculate InDegree: 
+        vector<int>InDeg(V);
+        for(int i=0; i<V; i++){
+            for(int j=0; j<adj[i].size(); j++){
+                InDeg[adj[i][j]]++;
+            }
         }
         
-        vector<int>ans;
-        while(!s.empty()){
-            ans.push_back(s.top());
-            s.pop();
+        queue<int> q;
+        
+        // Push all vertex whose indegree is ZERO: 
+        for(int i=0; i<V; i++){
+            if(InDeg[i]==0){
+                q.push(i);
+            }
+        }
+        
+        while(!q.empty()){
+            int node = q.front();
+            q.pop();
+            ans.push_back(node);
+            
+            // Neighbour of node ki InDegree ko 1 se kam karo: 
+            for(int j=0; j<adj[node].size(); j++){
+                InDeg[adj[node][j]]--;
+                
+                if(InDeg[adj[node][j]] == 0){
+                    q.push(adj[node][j]);
+                }
+            }
         }
         
         
